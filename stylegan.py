@@ -1,6 +1,7 @@
 import jittor as jt
 from jittor import nn, Module
 from math import sqrt
+import numpy as np
 import random
 class ConstantInput(Module):
     def __init__(self, channel, size=4):
@@ -14,8 +15,8 @@ class FusedUpsample(Module):# use filter
     def __init__(self, in_channel, out_channel, kernel_size, padding=0):
         super().__init__()
 
-        weight = jt.randn(in_channel, out_channel, kernel_size, kernel_size)
-        bias = jt.zeros(out_channel)
+        self.weight = jt.randn(in_channel, out_channel, kernel_size, kernel_size)
+        self.bias = jt.zeros(out_channel)
 
         fan_in = in_channel * kernel_size * kernel_size
         self.multiplier = sqrt(2 / fan_in)
@@ -34,8 +35,8 @@ class FusedUpsample(Module):# use filter
 class FusedDownsample(Module):
     def __init__(self, in_channel, out_channel, kernel_size, padding=0):
         super().__init__()
-        weight = jt.randn(out_channel, in_channel, kernel_size, kernel_size)
-        bias = jt.zeros(out_channel)
+        self.weight = jt.randn(out_channel, in_channel, kernel_size, kernel_size)
+        self.bias = jt.zeros(out_channel)
 
         fan_in = in_channel * kernel_size * kernel_size
         self.multiplier = sqrt(2 / fan_in)
@@ -80,11 +81,13 @@ class EqualConv2d(Module):
     def __init__(self, *args, **kwargs):
         super().__init__()
         conv = nn.Conv2d(*args, **kwargs)
-        conv.weight.data.normal_()
-        conv.bias.data.zero_()
+        # conv.weight.data.normal_()
+        # conv.bias.data.zero_()
+        jt.init.gauss_(conv.weight, 0, 1)
+        jt.init.constant_(conv.bias,0)
         self.conv = equal_lr(conv)
 
-    def forward(self, input):
+    def execute(self, input):
         return self.conv(input)
 class BlurFunctionBackward(jt.Function):
     def execute(self, grad_output, kernel, kernel_flip):
