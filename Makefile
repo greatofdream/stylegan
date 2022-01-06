@@ -15,4 +15,7 @@ image/stylegan:
 	mkdir -p $@
 	mkdir -p $@/checkpoint
 	mkdir -p $@/sample
-	CUDA_VISIBLE_DEVICES="1" python3 trainstylegan.py --opt_dir $@ --model_dir $@ --image_dir /home/greatofdream/jittor/resource/color_symbol_sample --mixing
+	CUDA_VISIBLE_DEVICES="0" python3.8 trainstylegan.py --opt_dir $@ --model_dir $@ --ckpt $@/checkpoint/010000_5.model --image_dir /home/greatofdream/jittor/resource/color_symbol_sample --mixing
+image/stylegan/generate:
+	mkdir -p $(@)
+	python3.8 generatestylegan.py --opt_dir $@  image/stylegan/checkpoint/010000.model

@@ -6,7 +6,6 @@ from jittor.dataset.dataset import Dataset
 import jittor.transform as transform
 import argparse
 import numpy as np
-import cv2
 import math, random, os
 from tqdm import tqdm
 import matplotlib.pyplot as plt
@@ -52,7 +51,7 @@ class MultiResolutionDataset(Dataset):
         X = self.train_image[index]
         return self.transform(X)
 parser = argparse.ArgumentParser()
-parser.add_argument('--maxiter', type=int, default=10000, help='number of epochs of training')
+parser.add_argument('--maxiter', type=int, default=40000, help='number of epochs of training')
 parser.add_argument('--init_size', default=8, type=int, help='initial image size')
 parser.add_argument('--lr', default=0.001, type=float, help='learning rate')
 parser.add_argument('--max_size', type=int, default=128, help='size of each image dimension')
@@ -110,7 +109,7 @@ def adjust_lr(optimizer, lr):
 def train(args, generator, discriminator):
     step = int(math.log2(args.init_size)) - 2
     resolution = 4 * 2 ** step
-    loader = MultiResolutionDataset(args.image_dir,transform=transform, resolution=resolution).set_attrs(batch_size=args.batch.get(resolution, args.batch_default))
+    loader = MultiResolutionDataset(args.image_dir,transform=transform, resolution=resolution).set_attrs(batch_size=args.batch.get(resolution, args.batch_default), shuffle=True)
     data_loader = iter(loader)
 
     adjust_lr(g_optimizer, args.lr.get(resolution, 0.001))
@@ -292,7 +291,13 @@ def train(args, generator, discriminator):
 
         if (i + 1) % 10000 == 0:
             jt.save(
-                g_running.state_dict(), f'{args.model_dir}/checkpoint/{str(i + 1).zfill(6)}.model'
+                {
+                    'generator': generator.state_dict(),
+                    'discriminator': discriminator.state_dict(),
+                    'g_optimizer': g_optimizer.state_dict(),
+                    'd_optimizer': d_optimizer.state_dict(),
+                    'g_running': g_running.state_dict(),
+                }, f'{args.model_dir}/checkpoint/{str(i + 1).zfill(6)}.model'
             )
 
         state_msg = (
