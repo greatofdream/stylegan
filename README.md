@@ -44,9 +44,9 @@ make image/stylegan
 #产生图片
 make image/style/generate
 ```
-训练30000次后的生成结果如下图，其实也看不出符号的样子，虽然训练了很多次，反复训练6次，前5次10000次迭代，最后一次30000次迭代。**可能是代码有问题**，但是比对并没有发现是哪里出了错误，找不到bug放弃了。模型文件为580M左右，放置在清华云盘，可以下载到`image/stylegan/checkpoint/010000.model`进行使用。
+训练30000次后的生成结果如下图，其实也看不出符号的样子，虽然训练了很多次，反复训练6次，前5次10000次迭代，最后一次30000次迭代。**可能是代码有问题**，但是比对并没有发现是哪里出了错误，找不到bug放弃了。模型文件为580M左右，放置在[清华云盘](https://cloud.tsinghua.edu.cn/f/0e7b30c929bd4533a78e/)，可以下载到`image/stylegan/checkpoint/010000.model`进行使用。
 
-![stylegan](image/stylegan/sample/010000.png)
+![stylegan](image/stylegan/sample/040000.png)
 [cuda ptx](https://zhuanlan.zhihu.com/p/432674688)
 ## reference
 + `A Style-Based Generator Architecture for Generative Adversarial Networks` https://arxiv.org/abs/1812.04948
